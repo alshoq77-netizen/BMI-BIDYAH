@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حساب كتلة الجسم</title>
+<style>
+  body {
+    font-family: "Cairo", sans-serif;
+    background: linear-gradient(to bottom right, #e3f2fd, #bbdefb);
+    text-align: center;
+    padding: 30px;
+    direction: rtl;
+  }
+  h1 { color: #0d47a1; }
+  input, select {
+    padding: 10px;
+    margin: 8px;
+    border-radius: 10px;
+    border: 1px solid #90caf9;
+    text-align: center;
+    width: 160px;
+  }
+  button {
+    background-color: #2196f3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  button:hover { background-color: #1976d2; }
+  .result {
+    margin-top: 25px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .status {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    color: white;
+  }
+</style>
+</head>
+<body>
+
+<h1>حاسبة كتلة الجسم (BMI)</h1>
+<p>أدخل البيانات التالية:</p>
+
+<input type="number" id="weight" placeholder="الوزن (كجم)">
+<input type="number" id="height" placeholder="الطول (سم)">
+<br>
+<input type="number" id="age" placeholder="العمر (بالسنوات)">
+<select id="gender">
+  <option value="">اختر الجنس</option>
+  <option value="male">ذكر</option>
+  <option value="female">أنثى</option>
+</select>
+<br>
+<button onclick="calculateBMI()">احسب</button>
+
+<div class="result" id="result"></div>
+
+<script>
+function calculateBMI() {
+  const weight = parseFloat(document.getElementById('weight').value);
+  const height = parseFloat(document.getElementById('height').value) / 100;
+  const age = parseInt(document.getElementById('age').value);
+  const gender = document.getElementById('gender').value;
+
+  if (!weight || !height || !age || !gender) {
+    document.getElementById('result').innerHTML = "الرجاء إدخال جميع البيانات بشكل صحيح.";
+    return;
+  }
+
+  const bmi = (weight / (height * height)).toFixed(1);
+  let status = "";
+  let color = "";
+  let weightToLose = 0;
+
+  if (bmi < 18.5) {
+    status = "نحافة";
+    color = "#ffeb3b";
+  } else if (bmi < 24.9) {
+    status = "وزن طبيعي";
+    color = "#4caf50";
+  } else if (bmi < 29.9) {
+    status = "زيادة وزن";
+    color = "#ff9800";
+  } else if (bmi < 34.9) {
+    status = "سمنة درجة أولى";
+    color = "#f44336";
+  } else if (bmi < 39.9) {
+    status = "سمنة درجة ثانية";
+    color = "#b71c1c";
+  } else {
+    status = "سمنة مفرطة";
+    color = "#212121";
+  }
+
+  // حساب كم يحتاج لإنقاص الوزن (حتى BMI = 24.9)
+  const idealWeight = 24.9 * (height * height);
+  if (weight > idealWeight) {
+    weightToLose = (weight - idealWeight).toFixed(1);
+  }
+
+  // نصيحة بسيطة حسب العمر والجنس
+  let advice = "";
+  if (gender === "male") {
+    if (age < 18) advice = "أنت في مرحلة النمو، احرص على غذاء متوازن بإشراف مختص.";
+    else if (age < 40) advice = "حافظ على نشاطك البدني بانتظام.";
+    else advice = "احرص على فحص ضغط الدم والسكر ومتابعة وزنك دورياً.";
+  } else if (gender === "female") {
+    if (age < 18) advice = "احرصي على غذاء غني بالكالسيوم والحديد لنمو صحي.";
+    else if (age < 40) advice = "مارسي النشاط البدني واهتمي بصحتك العامة.";
+    else advice = "تابعي صحتك بانتظام واحرصي على نمط حياة متوازن.";
+  }
+
+  let resultText = `
+    <p>كتلة الجسم لديك هي: <strong>${bmi}</strong></p>
+    <p class="status" style="background-color:${color}">${status}</p>
+  `;
+
+  if (weightToLose > 0) {
+    resultText += `<p>تحتاج إلى إنقاص <strong>${weightToLose}</strong> كجم للوصول إلى الوزن المثالي.</p>`;
+  } else {
+    resultText += `<p>وزنك في النطاق المثالي 🌿</p>`;
+  }
+
+  resultText += `<p style="margin-top:10px; color:#0d47a1;">${advice}</p>`;
+
+  document.getElementById('result').innerHTML = resultText;
+}
+</script>
+
+</body>
+</html>
